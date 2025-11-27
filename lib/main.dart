@@ -3,6 +3,7 @@ import 'styles/theme/app_theme.dart';
 import 'styles/theme/app_colors.dart';
 import 'navbar/simple_glass_navbar.dart';
 import 'navbar/glass_navbar.dart';
+import 'navbar/liquid_glass_navbar.dart';
 import 'components/glass_container.dart';
 
 void main() => runApp(const MyApp());
@@ -29,7 +30,22 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
-  bool _useSimpleNav = true;
+  int _navBarStyle = 0; // 0: Simple, 1: FAB, 2: Liquid Dark, 3: Liquid Light
+
+  String get _navBarName {
+    switch (_navBarStyle) {
+      case 0:
+        return 'Simple Glass';
+      case 1:
+        return 'Glass with FAB';
+      case 2:
+        return 'Liquid Dark';
+      case 3:
+        return 'Liquid Light';
+      default:
+        return 'Simple Glass';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,9 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        _useSimpleNav
-                            ? 'Simple Glass NavBar'
-                            : 'NavBar with FAB',
+                        _navBarName,
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       const SizedBox(height: 16),
@@ -99,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: ElevatedButton.icon(
                           onPressed: () {
                             setState(() {
-                              _useSimpleNav = !_useSimpleNav;
+                              _navBarStyle = (_navBarStyle + 1) % 4;
                             });
                           },
                           icon: const Icon(Icons.swap_horiz_rounded),
@@ -164,15 +178,37 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: _useSimpleNav
-          ? SimpleGlassNavBar(
-              currentIndex: _currentIndex,
-              onTap: (index) => setState(() => _currentIndex = index),
-            )
-          : GlassNavBar(
-              currentIndex: _currentIndex,
-              onTap: (index) => setState(() => _currentIndex = index),
-            ),
+      bottomNavigationBar: _buildNavBar(),
     );
+  }
+
+  Widget _buildNavBar() {
+    switch (_navBarStyle) {
+      case 0:
+        return SimpleGlassNavBar(
+          currentIndex: _currentIndex,
+          onTap: (index) => setState(() => _currentIndex = index),
+        );
+      case 1:
+        return GlassNavBar(
+          currentIndex: _currentIndex,
+          onTap: (index) => setState(() => _currentIndex = index),
+        );
+      case 2:
+        return LiquidGlassNavBarDark(
+          currentIndex: _currentIndex,
+          onTap: (index) => setState(() => _currentIndex = index),
+        );
+      case 3:
+        return LiquidGlassNavBarLight(
+          currentIndex: _currentIndex,
+          onTap: (index) => setState(() => _currentIndex = index),
+        );
+      default:
+        return SimpleGlassNavBar(
+          currentIndex: _currentIndex,
+          onTap: (index) => setState(() => _currentIndex = index),
+        );
+    }
   }
 }
